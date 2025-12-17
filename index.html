@@ -1,60 +1,73 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl">
+<html lang="he">
 <head>
     <meta charset="UTF-8">
-    <title>Braille Multi-Language Translator</title>
+    <title>מערכת תרגום לברייל | Braille Translator</title>
     <style>
-        body { font-family: sans-serif; text-align: center; padding: 20px; background: #f4f4f9; }
-        textarea { width: 80%; height: 100px; padding: 10px; font-size: 18px; margin-bottom: 20px; border-radius: 8px; }
-        #output { font-size: 40px; background: white; padding: 20px; min-height: 50px; border: 1px solid #ccc; border-radius: 8px; word-wrap: break-word; }
-        .container { max-width: 600px; margin: auto; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; padding: 40px; text-align: center; }
+        .app-container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        
+        /* Hebrew Input (RTL) */
+        textarea { 
+            width: 100%; height: 120px; padding: 15px; font-size: 20px; 
+            border: 2px solid #ddd; border-radius: 10px; margin-top: 10px;
+            direction: rtl; text-align: right; box-sizing: border-box;
+        }
+
+        /* Braille Output (Always LTR) */
+        #output { 
+            margin-top: 20px; padding: 20px; background: #222; color: #00ff00;
+            font-size: 35px; border-radius: 10px; min-height: 80px;
+            direction: ltr; text-align: left; word-wrap: break-word;
+            letter-spacing: 3px; line-height: 1.5;
+        }
+
+        h2 { color: #333; margin-bottom: 5px; }
+        .label { font-weight: bold; display: block; margin-top: 20px; color: #666; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>מתרגם לברייל / Braille Translator</h1>
-        <p>Type in Hebrew or English:</p>
-        <textarea id="inputText" placeholder="הקלידו כאן... / Type here..."></textarea>
-        
-        <h3>תוצאה / Result:</h3>
-        <div id="output"></div>
-    </div>
 
-    <script>
-        // Mapping for English and Hebrew to Braille Unicode
-    const brailleMap = {
-        // Letters
-        'א': '⠁', 'ב': '⠒', 'ג': '⠛', 'ד': '⠙', 'ה': '⠓', 'ו': '⠺', 'ז': '⠵', 'ח': '⠗', 'ט': '⠞', 'י': '⠊',
-        'כ': '⠅', 'ל': '⠇', 'מ': '⠍', 'נ': '⠝', 'ס': '⠎', 'ע': '⠯', 'פ': '⠏', 'צ': '⠮', 'ק': '⠟', 'ר': '⠇',
-        'ש': '⠩', 'ת': '⠹', 
-        // Final Letters (Sofiyot)
-        'ך': '⠅', 'ם': '⠍', 'ן': '⠝', 'ף': '⠏', 'ץ': '⠮',
-        // Nikud (Vowels)
-        '\u05B8': '⠇', // Kamatz
-        '\u05B7': '⠀', // Patach
-        '\u05B5': '⠑', // Tzere
-        '\u05B6': '⠓', // Segol
-        '\u05B4': '⠊', // Hirik
-        '\u05B9': '⠕', // Holam
-        '\u05BB': '⠥', // Kubutz
-        '\u05BC': '⠨', // Dagesh
-        // Punctuation & Space
-        ' ': ' ', '.': '⠲', ',': '⠂', '?': '⠦', '!': '⠮', '-': '⠤'
-    };
+<div class="app-container">
+    <h1>מתרגם ברייל רב-לשוני</h1>
     
+    <span class="label">הקלידו כאן (עברית או אנגלית) / Type Here:</span>
+    <textarea id="inputText" placeholder="שלום... Hello..."></textarea>
+
+    <span class="label">תוצאה בברייל (משמאל לימין) / Braille (LTR):</span>
+    <div id="output"></div>
+</div>
+
+<script>
+    const brailleMap = {
+        // Official Hebrew Braille (Israeli Standard)
+        'א': '⠁', 'ב': '⠃', 'ג': '⠛', 'ד': '⠙', 'ה': '⠓', 'ו': '⠺', 'ז': '⠵', 'ח': '⠗', 'ט': '⠞', 'י': '⠊',
+        'כ': '⠅', 'ל': '⠇', 'מ': '⠍', 'נ': '⠝', 'ס': '⠎', 'ע': '⠯', 'פ': '⠏', 'צ': '⠮', 'ק': '⠟', 'ר': '⠗',
+        'ש': '⠩', 'ת': '⠹',
+        'ך': '⠅', 'ם': '⠍', 'ן': '⠝', 'ף': '⠏', 'ץ': '⠮',
+        // English
+        'a': '⠁', 'b': '⠃', 'c': '⠉', 'd': '⠙', 'e': '⠑', 'f': '⠋', 'g': '⠛', 'h': '⠓', 'i': '⠊', 'j': '⠚',
+        'k': '⠅', 'l': '⠇', 'm': '⠍', 'n': '⠝', 'o': '⠕', 'p': '⠏', 'q': '⠟', 'r': '⠗', 's': '⠎', 't': '⠞',
+        'u': '⠥', 'v': '⠧', 'w': '⠺', 'x': '⠭', 'y': '⠽', 'z': '⠵',
+        // Common
+        ' ': '  ', '.': '⠲', ',': '⠂', '?': '⠦', '!': '⠮'
+    };
+
     const input = document.getElementById('inputText');
     const output = document.getElementById('output');
-    
+
     input.addEventListener('input', () => {
-        const text = input.value; // Removed toLowerCase to preserve Nikud codes
+        const text = input.value.toLowerCase();
         let result = "";
+        
+        // Even for Hebrew, we process the string from start to end 
+        // to display the Braille cells in LTR reading order.
         for (let char of text) {
-            // Look up the character; if not found, keep it as is
-            result += brailleMap[char] || char; 
+            result += brailleMap[char] || char;
         }
         output.innerText = result;
     });
-    </script>
-</body>
+</script>
 
+</body>
 </html>
